@@ -1,181 +1,642 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clément Villain - Portfolio</title>
+    <title>MEXT Research Proposal | AI Pedagogical Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f8fafc; /* bg-slate-50 */
-            color: #1e293b; /* text-slate-800 */
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC; /* Slate 50 */
+            color: #1E293B; /* Slate 800 */
         }
-        .header-bg {
-            background-color: #2563eb; /* bg-blue-600 */
+        
+        /* Chart Container Styling - Mandatory Requirement */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Constrain max width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 400px;
         }
-        .btn-primary {
-            background-color: #2563eb; /* bg-blue-600 */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
         }
-        .btn-primary:hover {
-            background-color: #1d4ed8; /* bg-blue-700 */
+
+        /* Custom Scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .section-title {
-            color: #2563eb; /* text-blue-600 */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .phase-card {
+            transition: all 0.3s ease;
+        }
+        .phase-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .active-tab {
+            border-bottom: 2px solid #4F46E5; /* Indigo 600 */
+            color: #4F46E5;
         }
     </style>
+    <!-- Chosen Palette: Academic Zen (Slate, Indigo, Rose) -->
+    <!-- Application Structure Plan: 
+         1. Hero: Title and Applicant focus.
+         2. Profile Section: Visualizes the "Past and Present Field of Study" using a Radar chart to show the multidisciplinary fit.
+         3. Problem/Solution: Interactive comparison cards to clarify the "Research Theme".
+         4. Methodology Roadmap: A 5-step interactive flow to detail the "Research Plan".
+         5. Impact Dashboard: Visualizing the "Expected Outcomes" and "Evaluation Criteria".
+         Rationale: This structure breaks dense academic text into digestible, logical components, emphasizing the 'Why', 'Who', 'How', and 'What If'.
+    -->
+    <!-- Visualization & Content Choices:
+         - Radar Chart: To show the balance of Math, CS, and AI skills (Input: Profile Text -> Goal: Show Competence -> Viz: Radar).
+         - Bar Chart: To visualize projected impact on teacher workload (Input: Expected Outcomes -> Goal: Show Benefit -> Viz: Bar).
+         - Interactive Methodology: To reduce cognitive load of the 5 phases (Input: Methodology Text -> Goal: Clarity -> Viz: Interactive List).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 </head>
-<body class="antialiased">
+<body class="flex flex-col min-h-screen text-slate-800">
 
-    <header class="header-bg text-white shadow-lg">
-        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold">Clément Villain</a>
-            <ul class="hidden md:flex space-x-6">
-                <li><a href="#about" class="hover:text-blue-200">À propos</a></li>
-                <li><a href="#skills" class="hover:text-blue-200">Compétences</a></li>
-                <li><a href="#projects" class="hover:text-blue-200">Projets</a></li>
-                <li><a href="#experience" class="hover:text-blue-200">Expérience</a></li>
-                <li><a href="#contact" class="hover:text-blue-200">Contact</a></li>
-            </ul>
-            <a href="#" class="btn-primary hidden md:block">Télécharger mon CV</a>
-            <button class="md:hidden text-white focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-        </nav>
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-indigo-700 tracking-tight">MEXT Proposal</span>
+                    <span class="ml-2 text-sm text-slate-500 hidden sm:inline-block">| Intelligent Tutoring Systems</span>
+                </div>
+                <div class="flex space-x-8 items-center hidden md:flex">
+                    <button onclick="scrollToSection('profile')" class="text-sm font-medium hover:text-indigo-600 transition-colors">Profile</button>
+                    <button onclick="scrollToSection('theme')" class="text-sm font-medium hover:text-indigo-600 transition-colors">Research Theme</button>
+                    <button onclick="scrollToSection('methodology')" class="text-sm font-medium hover:text-indigo-600 transition-colors">Methodology</button>
+                    <button onclick="scrollToSection('impact')" class="text-sm font-medium hover:text-indigo-600 transition-colors">Impact & Ethics</button>
+                </div>
+                <!-- Mobile menu button placeholder (simplified for single file) -->
+                <div class="flex items-center md:hidden">
+                    <button onclick="toggleMobileNav()" class="text-slate-500 hover:text-indigo-600">Menu</button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Nav Menu (Hidden by default) -->
+        <div id="mobile-nav" class="hidden md:hidden bg-white border-b border-slate-200 px-4 py-2">
+            <div class="flex flex-col space-y-2">
+                <button onclick="scrollToSection('profile'); toggleMobileNav()" class="text-left py-2">Profile</button>
+                <button onclick="scrollToSection('theme'); toggleMobileNav()" class="text-left py-2">Research Theme</button>
+                <button onclick="scrollToSection('methodology'); toggleMobileNav()" class="text-left py-2">Methodology</button>
+                <button onclick="scrollToSection('impact'); toggleMobileNav()" class="text-left py-2">Impact</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center">
+            <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-rose-500 uppercase bg-rose-50 rounded-full">
+                Research Plan
+            </div>
+            <h1 class="text-4xl font-extrabold text-slate-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+                Personalized Pedagogical Assistant<br>
+                <span class="text-indigo-600">for Overcrowded Classrooms</span>
+            </h1>
+            <p class="max-w-2xl mx-auto mt-5 text-xl text-slate-500">
+                Design and evaluation of an LLM-based system to support individualized learning and reduce teacher workload.
+            </p>
+            <div class="mt-8 flex justify-center gap-4">
+                <button onclick="scrollToSection('theme')" class="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 transition-all">
+                    Explore Proposal
+                </button>
+            </div>
+        </div>
     </header>
 
-    <section id="hero" class="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 md:py-32 overflow-hidden">
-        <div class="absolute inset-0 bg-cover bg-center opacity-10" style="background-image: url('https://via.placeholder.com/1920x1080/0000FF/FFFFFF?text=Coding+Background');"></div>
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-10">
-            <div class="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
-                <p class="text-lg mb-2">Bonjour, je suis</p>
-                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-4">Clément Villain</h1>
-                <p class="text-xl md:text-2xl mb-6">Étudiant en 3ème année de BUT MMI, futur alternant en Master IA.</p>
-                <p class="text-2xl font-semibold">Développeur Web Full Stack passionné par l'IA.</p>
-                <div class="mt-8">
-                    <a href="#projects" class="btn-primary text-lg inline-block mr-4">Mes Projets</a>
-                    <a href="#contact" class="border border-white text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">Contactez-moi</a>
-                </div>
-            </div>
-            <div class="md:w-1/2 flex justify-center md:justify-end">
-                <img src="https://via.placeholder.com/400x400/FFFFFF/000000?text=Photo+Cl%C3%A9ment" alt="Clément Villain" class="rounded-full w-64 h-64 md:w-80 md:h-80 object-cover shadow-2xl border-4 border-white">
-            </div>
-        </div>
-    </section>
+    <!-- Main Content -->
+    <main class="flex-grow">
 
-    <section id="about" class="py-16 md:py-24 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-12 section-title">À propos de moi</h2>
-            <div class="flex flex-col md:flex-row items-center gap-12">
-                <div class="md:w-1/2">
-                    <p class="text-lg leading-relaxed mb-4">
-                        En tant qu'étudiant en 3ème année de BUT MMI, spécialisé en développement web et systèmes interactifs, je suis animé par une soif d'apprendre constante et une curiosité prononcée pour l'innovation, notamment dans le domaine de l'Intelligence Artificielle.
-                    </p>
-                    <p class="text-lg leading-relaxed mb-4">
-                        Mon parcours m'a permis de développer une expertise solide en développement Full Stack, en travaillant sur des projets variés allant de la création de sites pour des auto-entrepreneurs à des applications générant du contenu par IA. Je suis à la recherche d'une alternance en Master IA pour approfondir mes compétences et contribuer à des projets ambitieux.
-                    </p>
-                    <p class="text-lg leading-relaxed">
-                        Je suis une personne **investie**, **consciencieuse** et dotée d'un fort esprit d'équipe, toujours prête à relever de nouveaux défis.
+        <!-- SECTION 1: CANDIDATE PROFILE -->
+        <section id="profile" class="py-16 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Candidate Background</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900">Past & Present Field of Study</p>
+                    <p class="mt-4 max-w-2xl text-xl text-slate-500 mx-auto">
+                        A unique convergence of scientific rigor, web engineering, and applied AI, positioning the candidate to bridge the gap between educational theory and technical implementation.
                     </p>
                 </div>
-                <div class="md:w-1/2 bg-blue-50 p-8 rounded-lg shadow-md">
-                    <h3 class="text-2xl font-bold mb-4 text-blue-700">Mes Qualités & Intérêts</h3>
-                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Investi</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Consciencieux</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Humilité et esprit d'apprentissage</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Musculation</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Dessin</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Automobile</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Jeux vidéos</li>
-                        <li class="flex items-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Volley</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section id="skills" class="py-16 md:py-24 bg-gray-100">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-12 section-title">Mes Compétences</h2>
-            <p class="text-lg">Section à remplir avec des icônes et descriptions pour le back-end, front-end, outils et langues.</p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-10">
-                <div class="p-6 bg-white rounded-lg shadow-md flex flex-col items-center">
-                    <img src="https://via.placeholder.com/60x60?text=PHP" alt="PHP" class="mb-4">
-                    <h3 class="font-semibold text-xl">PHP</h3>
-                </div>
-                <div class="p-6 bg-white rounded-lg shadow-md flex flex-col items-center">
-                    <img src="https://via.placeholder.com/60x60?text=React" alt="React" class="mb-4">
-                    <h3 class="font-semibold text-xl">React</h3>
-                </div>
-                </div>
-        </div>
-    </section>
-
-    <section id="projects" class="py-16 md:py-24 bg-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-12 section-title">Mes Projets</h2>
-            <p class="text-lg">Section à remplir avec des cartes pour chaque projet (Trisdom, Auto-entreprise, etc.).</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                    <img src="https://via.placeholder.com/400x250/E0F2FE/000000?text=Trisdom+Project" alt="Trisdom Project" class="w-full h-48 object-cover">
-                    <div class="p-6 text-left">
-                        <h3 class="text-2xl font-bold mb-2 text-blue-800">Trisdom - Agentix Canvas</h3>
-                        <p class="text-gray-700 mb-4">Application de génération de cours par IA, développée avec React et Supabase.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="bg-blue-200 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">React</span>
-                            <span class="bg-blue-200 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Supabase</span>
-                            <span class="bg-blue-200 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">IA</span>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Text Content -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100">
+                            <h3 class="text-lg font-bold text-slate-900 mb-2">Foundation: Science & Logic</h3>
+                            <p class="text-slate-600">
+                                Obtained a General Baccalaureate (Honors) with a focus on Mathematics, Physics, and Computer Science. developed strong analytical skills and a logical approach to problem-solving.
+                            </p>
                         </div>
-                        <a href="#" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-semibold">Voir le projet &rarr;</a>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100">
+                            <h3 class="text-lg font-bold text-slate-900 mb-2">Technical Core: Web & Software Engineering</h3>
+                            <p class="text-slate-600">
+                                Currently completing a Bachelor of University Technology (BUT) in Multimedia and Internet Professions. Specializing in modern front-end (React), databases, and HCI through a work-study program.
+                            </p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 border-l-4 border-l-indigo-500">
+                            <h3 class="text-lg font-bold text-slate-900 mb-2">Current Focus: Applied AI in Education</h3>
+                            <p class="text-slate-600">
+                                Developing a React-based system integrating LLMs for personalized content generation. Moving towards advanced studies in Intelligent Tutoring Systems.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Visualization -->
+                    <div class="bg-white p-4 rounded-xl shadow-md border border-slate-100">
+                        <h4 class="text-center font-semibold text-slate-700 mb-4">Competency Fit for Research</h4>
+                        <div class="chart-container">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                        <p class="text-center text-xs text-slate-400 mt-2">Scale: Relative proficiency and relevance to the proposed research.</p>
                     </div>
                 </div>
-                </div>
-        </div>
-    </section>
+            </div>
+        </section>
 
-    <section id="experience" class="py-16 md:py-24 bg-gray-100">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-12 section-title">Expérience & Parcours</h2>
-            <p class="text-lg">Section à remplir avec l'expérience professionnelle et le parcours académique.</p>
-        </div>
-    </section>
+        <!-- SECTION 2: RESEARCH THEME -->
+        <section id="theme" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center mb-16">
+                    <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Research Theme</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900">
+                        The Challenge: Overcrowded Classrooms
+                    </p>
+                    <p class="mt-4 max-w-2xl text-xl text-slate-500 lg:mx-auto">
+                        Recent advances in LLMs offer a solution to the "Teacher's Dilemma": How to provide individual attention to 40+ students simultaneously?
+                    </p>
+                </div>
 
-    <section id="contact" class="py-16 md:py-24 bg-blue-600 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold mb-12">Contactez-moi</h2>
-            <p class="text-lg mb-8">N'hésitez pas à me contacter pour toute opportunité ou question !</p>
-            <form class="max-w-xl mx-auto space-y-6">
-                <div>
-                    <input type="text" placeholder="Votre Nom" class="w-full p-4 rounded-lg bg-blue-500 border border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder-blue-100">
-                </div>
-                <div>
-                    <input type="email" placeholder="Votre Email" class="w-full p-4 rounded-lg bg-blue-500 border border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder-blue-100">
-                </div>
-                <div>
-                    <textarea placeholder="Votre Message" rows="6" class="w-full p-4 rounded-lg bg-blue-500 border border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder-blue-100"></textarea>
-                </div>
-                <button type="submit" class="btn-primary w-full md:w-auto">Envoyer le message</button>
-            </form>
-            <div class="mt-12 flex justify-center space-x-6">
-                <a href="https://www.linkedin.com/in/clementvillain/" target="_blank" class="text-white hover:text-blue-200 text-3xl"><i class="fab fa-linkedin"></i></a>
-                <a href="https://github.com/clementvillain" target="_blank" class="text-white hover:text-blue-200 text-3xl"><i class="fab fa-github"></i></a>
-                </div>
-        </div>
-    </section>
+                <!-- Problem / Solution Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-rose-50 rounded-xl p-8 border border-rose-100">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 bg-rose-100 rounded-full p-3 text-rose-600 font-bold text-xl">!</div>
+                            <h3 class="ml-4 text-xl font-bold text-rose-900">Current Problems</h3>
+                        </div>
+                        <ul class="space-y-3 text-rose-800">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Reduced student engagement due to lack of attention.
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Heterogeneous learning outcomes (gap widens).
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Excessive repetitive workload for teachers.
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Difficulty in providing timely feedback.
+                            </li>
+                        </ul>
+                    </div>
 
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2023 Clément Villain. Tous droits réservés.</p>
+                    <div class="bg-indigo-50 rounded-xl p-8 border border-indigo-100">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 bg-indigo-100 rounded-full p-3 text-indigo-600 font-bold text-xl">✓</div>
+                            <h3 class="ml-4 text-xl font-bold text-indigo-900">Proposed Solution</h3>
+                        </div>
+                        <ul class="space-y-3 text-indigo-800">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> <strong>Personalized Assistant:</strong> Adapts to student level.
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> <strong>Scaffolding:</strong> Guided support, not just answers.
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> <strong>Teacher Support:</strong> Reduces repetitive questions.
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> <strong>Complementary:</strong> Assists, does not replace.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Role Definition -->
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-6 text-center">Defining Roles: Symbiosis, Not Replacement</h3>
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        <table class="min-w-full divide-y divide-slate-300">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">Dimension</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-indigo-600">The Human Teacher</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-rose-500">The AI Assistant</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">Primary Focus</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">Pedagogical strategy, emotional support, complex concepts.</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">Repetitive explanations, immediate feedback, practice drills.</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">Scalability</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">Limited (1-to-Many).</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">Infinite (1-to-1 for every student).</td>
+                                </tr>
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">Adaptability</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">Adapts to the "average" of the class.</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">Adapts to individual profile & history.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: METHODOLOGY -->
+        <section id="methodology" class="py-16 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Execution Plan</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900">Methodology & Roadmap</p>
+                    <p class="mt-4 max-w-2xl text-xl text-slate-500 mx-auto">
+                        An applied research approach combining system design, data engineering, and experimental evaluation.
+                    </p>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8">
+                    <!-- Steps Navigation -->
+                    <div class="md:w-1/3 space-y-2">
+                        <button onclick="showPhase(1)" id="btn-phase-1" class="phase-btn w-full text-left px-6 py-4 rounded-lg bg-white shadow-sm hover:bg-indigo-50 border-l-4 border-indigo-600 transition-all">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Phase 1</span>
+                            <h4 class="font-bold text-slate-800">Needs Analysis & Design</h4>
+                        </button>
+                        <button onclick="showPhase(2)" id="btn-phase-2" class="phase-btn w-full text-left px-6 py-4 rounded-lg bg-white shadow-sm hover:bg-indigo-50 border-l-4 border-transparent transition-all">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Phase 2</span>
+                            <h4 class="font-bold text-slate-800">Data Collection</h4>
+                        </button>
+                        <button onclick="showPhase(3)" id="btn-phase-3" class="phase-btn w-full text-left px-6 py-4 rounded-lg bg-white shadow-sm hover:bg-indigo-50 border-l-4 border-transparent transition-all">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Phase 3</span>
+                            <h4 class="font-bold text-slate-800">Model Adaptation</h4>
+                        </button>
+                        <button onclick="showPhase(4)" id="btn-phase-4" class="phase-btn w-full text-left px-6 py-4 rounded-lg bg-white shadow-sm hover:bg-indigo-50 border-l-4 border-transparent transition-all">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Phase 4</span>
+                            <h4 class="font-bold text-slate-800">Personalization</h4>
+                        </button>
+                        <button onclick="showPhase(5)" id="btn-phase-5" class="phase-btn w-full text-left px-6 py-4 rounded-lg bg-white shadow-sm hover:bg-indigo-50 border-l-4 border-transparent transition-all">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Phase 5</span>
+                            <h4 class="font-bold text-slate-800">Experimental Evaluation</h4>
+                        </button>
+                    </div>
+
+                    <!-- Steps Details -->
+                    <div class="md:w-2/3 bg-white p-8 rounded-xl shadow-md min-h-[400px] border border-slate-200">
+                        <!-- Phase 1 Content -->
+                        <div id="phase-1" class="phase-content block animate-fade-in">
+                            <div class="flex items-center mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold mr-4">Phase 1</span>
+                                <h3 class="text-2xl font-bold text-slate-900">Needs Analysis & System Design</h3>
+                            </div>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                Before writing code, we must understand the classroom dynamics. This phase involves defining the functional architecture and key use cases.
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-slate-50 p-4 rounded border border-slate-100">
+                                    <h5 class="font-bold text-indigo-600 mb-2">Actions</h5>
+                                    <ul class="text-sm text-slate-600 space-y-2">
+                                        <li>• Teacher/Student interviews & questionnaires.</li>
+                                        <li>• Identify friction points in large classes.</li>
+                                        <li>• Design functional architecture (Dashboard, Chat UI).</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded border border-slate-100">
+                                    <h5 class="font-bold text-rose-500 mb-2">Deliverables</h5>
+                                    <ul class="text-sm text-slate-600 space-y-2">
+                                        <li>• Requirement Specification Document.</li>
+                                        <li>• UI/UX Wireframes.</li>
+                                        <li>• Architectural Diagram.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phase 2 Content -->
+                        <div id="phase-2" class="phase-content hidden animate-fade-in">
+                            <div class="flex items-center mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold mr-4">Phase 2</span>
+                                <h3 class="text-2xl font-bold text-slate-900">Data Collection & Preparation</h3>
+                            </div>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                High-quality pedagogical data is essential for fine-tuning. We focus on materials that encourage "step-by-step" thinking.
+                            </p>
+                            <div class="bg-slate-50 p-4 rounded border border-slate-100 mb-4">
+                                <h5 class="font-bold text-indigo-600 mb-2">Data Sources</h5>
+                                <p class="text-sm text-slate-600">Curricula, textbooks, exercises, model solutions, and anonymized teacher-student interaction logs (where authorized).</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded border border-slate-100">
+                                <h5 class="font-bold text-indigo-600 mb-2">Processing</h5>
+                                <p class="text-sm text-slate-600">Cleaning, Anonymization, Formatting for Instruction Tuning (Input/Output pairs).</p>
+                            </div>
+                        </div>
+
+                        <!-- Phase 3 Content -->
+                        <div id="phase-3" class="phase-content hidden animate-fade-in">
+                            <div class="flex items-center mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold mr-4">Phase 3</span>
+                                <h3 class="text-2xl font-bold text-slate-900">Model Adaptation & Integration</h3>
+                            </div>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                Tuning the generic LLM to become a "Pedagogical Agent" that provides hints rather than direct answers.
+                            </p>
+                            <ul class="space-y-4">
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs mt-0.5">1</div>
+                                    <div class="ml-4">
+                                        <h5 class="text-sm font-bold text-slate-900">Model Selection</h5>
+                                        <p class="text-sm text-slate-500">Selecting a base model (e.g., Llama, Mistral) based on size and licensing.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs mt-0.5">2</div>
+                                    <div class="ml-4">
+                                        <h5 class="text-sm font-bold text-slate-900">Fine-Tuning</h5>
+                                        <p class="text-sm text-slate-500">Supervised Fine-Tuning (SFT) to encourage structured explanations and Socratic questioning.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs mt-0.5">3</div>
+                                    <div class="ml-4">
+                                        <h5 class="text-sm font-bold text-slate-900">Safety Guardrails</h5>
+                                        <p class="text-sm text-slate-500">Rule-based constraints to prevent hallucination and ensure appropriate content.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Phase 4 Content -->
+                        <div id="phase-4" class="phase-content hidden animate-fade-in">
+                            <div class="flex items-center mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold mr-4">Phase 4</span>
+                                <h3 class="text-2xl font-bold text-slate-900">Personalization Mechanisms</h3>
+                            </div>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                The core differentiator: The system remembers the student.
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="border border-slate-200 p-4 rounded-lg">
+                                    <h5 class="font-bold text-slate-800 mb-2">Student Profile</h5>
+                                    <p class="text-sm text-slate-600">Stores academic level, past interactions, and recurring error patterns.</p>
+                                </div>
+                                <div class="border border-slate-200 p-4 rounded-lg">
+                                    <h5 class="font-bold text-slate-800 mb-2">Dynamic Adjustment</h5>
+                                    <p class="text-sm text-slate-600">Adjusts vocabulary complexity, explanation depth, and example relevance in real-time.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Phase 5 Content -->
+                         <div id="phase-5" class="phase-content hidden animate-fade-in">
+                            <div class="flex items-center mb-6">
+                                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold mr-4">Phase 5</span>
+                                <h3 class="text-2xl font-bold text-slate-900">Experimental Evaluation</h3>
+                            </div>
+                            <p class="text-slate-600 mb-6 leading-relaxed">
+                                Testing the prototype in a real educational setting (Pilot Study).
+                            </p>
+                            <div class="bg-slate-50 p-6 rounded-lg border border-slate-100">
+                                <h5 class="font-bold text-slate-900 mb-4">Evaluation Methods</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center p-2 bg-white rounded shadow-sm">
+                                        <div class="text-indigo-600 font-bold">Quantitative</div>
+                                        <div class="text-xs text-slate-500">Pre/Post Tests, Usage Stats</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-white rounded shadow-sm">
+                                        <div class="text-indigo-600 font-bold">Qualitative</div>
+                                        <div class="text-xs text-slate-500">Interviews, Surveys</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-white rounded shadow-sm col-span-2">
+                                        <div class="text-rose-500 font-bold">Control Group</div>
+                                        <div class="text-xs text-slate-500">Comparison with non-assisted class</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: IMPACT & ETHICS -->
+        <section id="impact" class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    
+                    <!-- Chart Column -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 mb-6">Expected Outcomes</h2>
+                        <p class="text-slate-500 mb-8">
+                            We aim to validate a prototype that improves learning without burdening teachers. The chart below illustrates the <span class="text-indigo-600 font-semibold">target metrics</span> for success.
+                        </p>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+                             <div class="chart-container">
+                                <canvas id="impactChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ethics & Criteria Column -->
+                    <div class="space-y-8">
+                        
+                        <!-- Criteria -->
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Evaluation Criteria</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-green-800 text-sm">For Students</h4>
+                                    <p class="text-xs text-green-700 mt-1">Understanding, Engagement, Confidence to ask questions.</p>
+                                </div>
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-blue-800 text-sm">For Teachers</h4>
+                                    <p class="text-xs text-blue-700 mt-1">Perceived workload, Trust in AI, Usefulness.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ethics -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center">
+                                <span class="text-xl mr-2">⚖️</span> Ethical Considerations
+                            </h3>
+                            <p class="text-sm text-slate-600 mb-4">
+                                Special attention will be given to data privacy and the role of AI.
+                            </p>
+                            <ul class="text-sm text-slate-600 space-y-2">
+                                <li class="flex items-center"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>Anonymization of all student data.</li>
+                                <li class="flex items-center"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>Informed consent from all participants.</li>
+                                <li class="flex items-center"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>Mechanisms to report incorrect AI responses.</li>
+                                <li class="flex items-center"><span class="w-2 h-2 bg-slate-400 rounded-full mr-2"></span><strong>Principle:</strong> AI supports, never replaces.</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-white text-lg font-bold mb-4">MEXT Scholarship Research Proposal</h2>
+            <p class="max-w-md mx-auto mb-8">
+                "Design and evaluation of a personalized pedagogical assistant based on large language models to support learning in overcrowded classrooms."
+            </p>
+            <div class="text-sm">
+                Generated presentation based on candidate's research plan.
+            </div>
         </div>
     </footer>
 
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit-id.js" crossorigin="anonymous"></script>
+    <script>
+        // --- Navigation Logic ---
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobile-nav');
+            nav.classList.toggle('hidden');
+        }
+
+        // --- Phase Stepper Logic ---
+        function showPhase(phaseNum) {
+            // Hide all content
+            document.querySelectorAll('.phase-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Remove active style from all buttons
+            document.querySelectorAll('.phase-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'bg-indigo-50');
+                btn.classList.add('border-transparent', 'bg-white');
+            });
+
+            // Show selected content
+            document.getElementById(`phase-${phaseNum}`).classList.remove('hidden');
+
+            // specific style for active button
+            const activeBtn = document.getElementById(`btn-phase-${phaseNum}`);
+            activeBtn.classList.remove('border-transparent', 'bg-white');
+            activeBtn.classList.add('border-indigo-600', 'bg-indigo-50');
+        }
+
+        // --- Charts Initialization ---
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Skills Radar Chart
+            const ctxSkills = document.getElementById('skillsChart').getContext('2d');
+            new Chart(ctxSkills, {
+                type: 'radar',
+                data: {
+                    labels: ['Mathematics', 'Physics', 'Computer Science', 'Web Dev (React)', 'HCI', 'Applied AI'],
+                    datasets: [{
+                        label: 'Candidate Profile',
+                        data: [85, 75, 90, 95, 80, 85], // Estimated values based on text
+                        fill: true,
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo
+                        borderColor: 'rgb(79, 70, 229)',
+                        pointBackgroundColor: 'rgb(79, 70, 229)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(79, 70, 229)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.1)' },
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            pointLabels: {
+                                font: { size: 12, family: 'Inter' },
+                                color: '#475569'
+                            },
+                            ticks: { display: false, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // 2. Impact Bar Chart (Projected)
+            const ctxImpact = document.getElementById('impactChart').getContext('2d');
+            new Chart(ctxImpact, {
+                type: 'bar',
+                data: {
+                    labels: ['Concept Understanding', 'Student Engagement', 'Teacher Admin Load', 'Feedback Speed'],
+                    datasets: [{
+                        label: 'Current Classroom',
+                        data: [60, 50, 90, 30],
+                        backgroundColor: '#cbd5e1', // Slate 300
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'With AI Assistant (Target)',
+                        data: [85, 80, 50, 95],
+                        backgroundColor: '#f43f5e', // Rose 500
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Metric Score (Est.)' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>
